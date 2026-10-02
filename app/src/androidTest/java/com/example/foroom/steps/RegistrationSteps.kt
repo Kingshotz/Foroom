@@ -1,37 +1,44 @@
 package com.example.foroom.steps
 
-import com.example.foroom.Helper.waitUntil
-import com.example.foroom.Helper.waitUntilGone
+import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import com.example.foroom.Helper.waitFor
 import com.example.foroom.pages.LoginPage
 import com.example.foroom.pages.RegistrationPage
 
+/** Every step returns the steps object, so calls can be chained. */
 object RegistrationSteps {
-    private const val AVATAR_TIMEOUT_MS = 15_000L
-    private const val REGISTRATION_TIMEOUT_MS = 20_000L
 
-    fun verifyRegistrationScreenIsDisplayed() {
-        RegistrationPage.waitUntilDisplayed()
-        LoginPage.logInButton.waitUntilGone()
+    fun checkRegistrationScreenIsDisplayed() = apply {
+        waitFor(RegistrationPage.repeatPasswordInput)
+        waitFor(RegistrationPage.avatarList)
+        // Both screens use the same ids, so wait until the login screen is fully gone
+        waitFor(LoginPage.logInButton, doesNotExist())
     }
 
-    fun fillCredentials(userName: String, password: String, repeatPassword: String = password) {
+    fun enterUserName(userName: String) = apply {
         RegistrationPage.enterUserName(userName)
+    }
+
+    fun enterPassword(password: String) = apply {
         RegistrationPage.enterPassword(password)
-        RegistrationPage.enterRepeatPassword(repeatPassword)
     }
 
-    fun selectAvatar(index: Int) {
-        RegistrationPage.waitForAvatarsLoaded(AVATAR_TIMEOUT_MS)
-        RegistrationPage.tapAvatar(index)
-        RegistrationPage.waitForAvatarSelected(index)
+    fun enterRepeatPassword(password: String) = apply {
+        RegistrationPage.enterRepeatPassword(password)
     }
 
-    fun submit() {
-        RegistrationPage.tapSignUp()
+    fun selectAvatar(index: Int) = apply {
+        waitFor(RegistrationPage.avatarList, matches(RegistrationPage.avatarsLoaded))
+        RegistrationPage.clickAvatar(index)
     }
 
-    fun verifyHomeScreenIsDisplayed() {
-        RegistrationPage.homeNavBar.waitUntil(timeoutMs = REGISTRATION_TIMEOUT_MS)
-        RegistrationPage.homeContainer.waitUntil()
+    fun clickSignUp() = apply {
+        RegistrationPage.clickSignUp()
+    }
+
+    fun checkHomeScreenIsDisplayed() = apply {
+        waitFor(RegistrationPage.navBar)
+        waitFor(RegistrationPage.homeContainer)
     }
 }

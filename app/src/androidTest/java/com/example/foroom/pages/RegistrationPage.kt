@@ -1,119 +1,69 @@
 package com.example.foroom.pages
 
 import android.view.View
+import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.matcher.BoundedMatcher
-import androidx.test.espresso.matcher.ViewMatchers.hasSibling
+import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.util.TreeIterables
 import com.alternator.foroom.R
 import com.example.design_system.components.image_chooser.ImageChooserItemView
 import com.example.design_system.components.image_chooser.ImageChooserListView
-import com.example.foroom.Helper.inputEditText
-import com.example.foroom.Helper.waitUntil
+import com.example.foroom.Helper.withIndex
 import com.example.shared.model.Image
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.allOf
+import com.example.design_system.R as DesignR
 
 object RegistrationPage {
-    // Login reuses userNameInput, passwordInput and signUpButton ids, so they are
-    // scoped to the registration screen through views that exist only there.
-    private val onRegistrationScreen = hasSibling(withId(R.id.repeatPasswordInput))
+    val userNameInput = withId(R.id.userNameInput)
+    val passwordInput = withId(R.id.passwordInput)
+    val repeatPasswordInput = withId(R.id.repeatPasswordInput)
+    val avatarList = withId(R.id.listView)
+    val signUpButton = withId(R.id.signUpButton)
 
-    val userNameInput: Matcher<View> = allOf(withId(R.id.userNameInput), onRegistrationScreen)
-    val passwordInput: Matcher<View> = allOf(withId(R.id.passwordInput), onRegistrationScreen)
-    val repeatPasswordInput: Matcher<View> = withId(R.id.repeatPasswordInput)
-    val avatarList: Matcher<View> = withId(R.id.listView)
-    val signUpButton: Matcher<View> =
-        allOf(withId(R.id.signUpButton), hasSibling(withId(R.id.logInTextView)))
+    val userNameEditText = allOf(withId(DesignR.id.inputEditText), isDescendantOfA(userNameInput))
+    val passwordEditText = allOf(withId(DesignR.id.inputEditText), isDescendantOfA(passwordInput))
+    val repeatPasswordEditText = allOf(withId(DesignR.id.inputEditText), isDescendantOfA(repeatPasswordInput))
 
-    // Home screen opened after a successful sign-up
-    val homeContainer: Matcher<View> = withId(R.id.homeContainer)
-    val homeNavBar: Matcher<View> = withId(R.id.navBar)
+    // Home screen, opened after a successful registration
+    val homeContainer = withId(R.id.homeContainer)
+    val navBar = withId(R.id.navBar)
 
-    private val userNameEditText = inputEditText(userNameInput)
-    private val passwordEditText = inputEditText(passwordInput)
-    private val repeatPasswordEditText = inputEditText(repeatPasswordInput)
+    /** True when the real avatars are shown (not the loading placeholders) and can be selected. */
+    val avatarsLoaded: Matcher<View> =
+        object : BoundedMatcher<View, ImageChooserListView>(ImageChooserListView::class.java) {
+            override fun describeTo(description: Description) {
+                description.appendText("avatars are loaded")
+            }
 
-    fun avatar(index: Int): Matcher<View> = allOf(
-        isDescendantOfA(avatarList),
-        avatarAtIndex(index)
-    )
-
-    fun waitUntilDisplayed() {
-        userNameInput.waitUntil()
-        passwordInput.waitUntil()
-        repeatPasswordInput.waitUntil()
-        avatarList.waitUntil()
-        signUpButton.waitUntil()
-    }
+            override fun matchesSafely(list: ImageChooserListView) =
+                list.isChoosingEnabled && list.images.isNotEmpty() &&
+                    list.images.none { it.id == Image.BLANK_IMAGE_ID }
+        }
 
     fun enterUserName(userName: String) {
-        userNameEditText.waitUntil().perform(replaceText(userName), closeSoftKeyboard())
+        onView(userNameEditText).perform(replaceText(userName), closeSoftKeyboard())
     }
 
     fun enterPassword(password: String) {
-        passwordEditText.waitUntil().perform(replaceText(password), closeSoftKeyboard())
+        onView(passwordEditText).perform(replaceText(password), closeSoftKeyboard())
     }
 
     fun enterRepeatPassword(password: String) {
-        repeatPasswordEditText.waitUntil().perform(replaceText(password), closeSoftKeyboard())
+        onView(repeatPasswordEditText).perform(replaceText(password), closeSoftKeyboard())
     }
 
-    /** Avatars are fetched asynchronously; until then the list shows blank placeholders and ignores taps. */
-    fun waitForAvatarsLoaded(timeoutMs: Long) {
-        avatarList.waitUntil(avatarsLoaded(), timeoutMs)
+    fun clickAvatar(index: Int) {
+        val avatars = allOf(isAssignableFrom(ImageChooserItemView::class.java), isDescendantOfA(avatarList))
+        onView(withIndex(avatars, index)).perform(click())
     }
 
-    fun tapAvatar(index: Int) {
-        avatar(index).waitUntil().perform(click())
+    fun clickSignUp() {
+        onView(signUpButton).perform(click())
     }
-
-    fun waitForAvatarSelected(index: Int) {
-        avatarList.waitUntil(hasSelectedAvatar(index))
-    }
-
-    fun tapSignUp() {
-        signUpButton.waitUntil().perform(click())
-    }
-
-    private fun avatarsLoaded(): Matcher<View> =
-        object : BoundedMatcher<View, ImageChooserListView>(ImageChooserListView::class.java) {
-            override fun describeTo(description: Description) {
-                description.appendText("avatar list with loaded, selectable avatars")
-            }
-
-            override fun matchesSafely(list: ImageChooserListView): Boolean =
-                list.isChoosingEnabled && list.images.isNotEmpty() &&
-                    list.images.none { image -> image.id == Image.BLANK_IMAGE_ID }
-        }
-
-    private fun hasSelectedAvatar(index: Int): Matcher<View> =
-        object : BoundedMatcher<View, ImageChooserListView>(ImageChooserListView::class.java) {
-            override fun describeTo(description: Description) {
-                description.appendText("avatar list with avatar #$index selected")
-            }
-
-            override fun matchesSafely(list: ImageChooserListView): Boolean =
-                list.selectedIndex == index
-        }
-
-    /** Matches the avatar item at [index] in display order; avatar items have no ids. */
-    private fun avatarAtIndex(index: Int): Matcher<View> =
-        object : BoundedMatcher<View, ImageChooserItemView>(ImageChooserItemView::class.java) {
-            override fun describeTo(description: Description) {
-                description.appendText("avatar item at index $index")
-            }
-
-            override fun matchesSafely(item: ImageChooserItemView): Boolean {
-                val list = item.parent?.parent as? ImageChooserListView ?: return false
-                val items = TreeIterables.breadthFirstViewTraversal(list)
-                    .filterIsInstance<ImageChooserItemView>()
-                return items.indexOf(item) == index
-            }
-        }
 }

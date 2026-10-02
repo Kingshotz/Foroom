@@ -1,70 +1,40 @@
 package com.example.foroom.pages
 
-import android.view.View
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.replaceText
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.hasSibling
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.alternator.foroom.R
-import com.example.foroom.Helper.inputDescription
-import com.example.foroom.Helper.inputEditText
-import com.example.foroom.Helper.isShownWithText
-import com.example.foroom.Helper.waitUntil
-import org.hamcrest.Matcher
 import org.hamcrest.Matchers.allOf
-import org.hamcrest.Matchers.not
+import com.example.design_system.R as DesignR
 
 object LoginPage {
-    // Registration reuses userNameInput, passwordInput and signUpButton ids, so they are
-    // scoped to the login screen through the Log In button they sit next to.
-    private val onLoginScreen = hasSibling(withId(R.id.logInButton))
+    val userNameInput = withId(R.id.userNameInput)
+    val passwordInput = withId(R.id.passwordInput)
+    val logInButton = withId(R.id.logInButton)
+    val signUpButton = withId(R.id.signUpButton)
 
-    val logInButton: Matcher<View> = withId(R.id.logInButton)
-    val signUpButton: Matcher<View> = allOf(withId(R.id.signUpButton), onLoginScreen)
-    val userNameInput: Matcher<View> = allOf(withId(R.id.userNameInput), onLoginScreen)
-    val passwordInput: Matcher<View> = allOf(withId(R.id.passwordInput), onLoginScreen)
+    val userNameEditText = allOf(withId(DesignR.id.inputEditText), isDescendantOfA(userNameInput))
+    val passwordEditText = allOf(withId(DesignR.id.inputEditText), isDescendantOfA(passwordInput))
 
-    private val userNameEditText = inputEditText(userNameInput)
-    private val passwordEditText = inputEditText(passwordInput)
-    private val userNameDescription = inputDescription(userNameInput)
-    private val passwordDescription = inputDescription(passwordInput)
-
-    fun waitUntilDisplayed() {
-        logInButton.waitUntil()
-        userNameInput.waitUntil()
-        passwordInput.waitUntil()
-        signUpButton.waitUntil()
-    }
+    val userNameError = allOf(withId(DesignR.id.descriptionTextView), isDescendantOfA(userNameInput))
+    val passwordError = allOf(withId(DesignR.id.descriptionTextView), isDescendantOfA(passwordInput))
 
     fun enterUserName(userName: String) {
-        userNameEditText.waitUntil().perform(replaceText(userName), closeSoftKeyboard())
+        onView(userNameEditText).perform(replaceText(userName), closeSoftKeyboard())
     }
 
     fun enterPassword(password: String) {
-        passwordEditText.waitUntil().perform(replaceText(password), closeSoftKeyboard())
+        onView(passwordEditText).perform(replaceText(password), closeSoftKeyboard())
     }
 
-    fun tapLogIn() {
-        logInButton.waitUntil().perform(click())
+    fun clickLogIn() {
+        onView(logInButton).perform(click())
     }
 
-    fun tapSignUp() {
-        signUpButton.waitUntil().perform(click())
-    }
-
-    fun waitForUserNameError() {
-        userNameDescription.waitUntil(isShownWithText())
-    }
-
-    fun waitForPasswordError() {
-        passwordDescription.waitUntil(isShownWithText())
-    }
-
-    fun checkUserNameErrorNotDisplayed() {
-        onView(userNameDescription).check(matches(not(isDisplayed())))
+    fun clickSignUp() {
+        onView(signUpButton).perform(click())
     }
 }

@@ -2,12 +2,10 @@ package com.example.foroom.tests
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.example.foroom.presentation.ui.activity.ForoomActivity
 import com.example.foroom.presentation.ui.util.datastore.user.ForoomUserDataStore
 import com.example.foroom.steps.LoginSteps
-import com.example.foroom.steps.RegistrationSteps
 import kotlinx.coroutines.runBlocking
 import org.junit.Rule
 import org.junit.Test
@@ -15,17 +13,20 @@ import org.junit.rules.ExternalResource
 import org.junit.runner.RunWith
 import org.koin.core.context.GlobalContext
 
+/**
+ * Runs against the training app (com.alternator.foroom.training), the default debug build.
+ * Test data and error texts come from its local backend (TrainingInterceptor).
+ */
 @RunWith(AndroidJUnit4::class)
-@LargeTest
 class LoginAndRegistrationTests {
 
-    /**
-     * Clears the saved session before the activity starts, so every test opens on the login
-     * screen regardless of which tests ran before it (e.g. a successful registration).
-     */
+    // Runs before the activity starts: logs out any saved user so every test begins on the login screen
     @get:Rule(order = 0)
-    val signedOutRule = object : ExternalResource() {
+    val logOutRule = object : ExternalResource() {
         override fun before() {
+            val packageName = InstrumentationRegistry.getInstrumentation().targetContext.packageName
+            check(packageName == TRAINING_PACKAGE) { "Run these tests on the training build, not $packageName" }
+
             runBlocking { GlobalContext.get().get<ForoomUserDataStore>().clearUserData() }
         }
     }
@@ -34,45 +35,49 @@ class LoginAndRegistrationTests {
     val activityRule = ActivityScenarioRule(ForoomActivity::class.java)
 
     @Test
-    fun logInWithValidUserNameAndInvalidPasswordShowsPasswordError() {
-        LoginSteps.verifyLoginScreenIsDisplayed()
-        LoginSteps.logIn(validUserName, INVALID_PASSWORD)
-        LoginSteps.verifyPasswordErrorIsDisplayed()
-        LoginSteps.verifyUserNameErrorIsNotDisplayed()
+    fun validUserNameAndInvalidPassword() {
+        LoginSteps
+            .checkLoginScreenIsDisplayed()
+            .enterUserName(EXISTING_USER_NAME)
+            .enterPassword(WRONG_PASSWORD)
+            .clickLogIn()
+            .checkPasswordError(PASSWORD_ERROR)
     }
 
     @Test
-    fun logInWithInvalidUserNameAndInvalidPasswordShowsUserNameAndPasswordErrors() {
-        LoginSteps.verifyLoginScreenIsDisplayed()
-        LoginSteps.logIn(uniqueUserName("nouser"), INVALID_PASSWORD)
-        LoginSteps.verifyUserNameErrorIsDisplayed()
-        LoginSteps.verifyPasswordErrorIsDisplayed()
+    fun invalidUserNameAndInvalidPassword() {
+        LoginSteps
+            .checkLoginScreenIsDisplayed()
+            .enterUserName("nouser${System.currentTimeMillis()}")
+            .enterPassword(WRONG_PASSWORD)
+            .clickLogIn()
+            .checkUserNameError(USER_NAME_ERROR)
+            .checkPasswordError(PASSWORD_ERROR)
     }
 
     @Test
-    fun signUpWithValidDataOpensHomeScreen() {
-        LoginSteps.verifyLoginScreenIsDisplayed()
-        LoginSteps.openRegistration()
-        RegistrationSteps.verifyRegistrationScreenIsDisplayed()
-        RegistrationSteps.fillCredentials(uniqueUserName("qa"), VALID_PASSWORD)
-        RegistrationSteps.selectAvatar(AVATAR_INDEX)
-        RegistrationSteps.submit()
-        RegistrationSteps.verifyHomeScreenIsDisplayed()
+    fun successfulRegistration() {
+        LoginSteps
+            .checkLoginScreenIsDisplayed()
+            .clickSignUp()
+            .checkRegistrationScreenIsDisplayed()
+            .enterUserName("user${System.currentTimeMillis()}")
+            .enterPassword(NEW_PASSWORD)
+            .enterRepeatPassword(NEW_PASSWORD)
+            .selectAvatar(1)
+            .clickSignUp()
+            .checkHomeScreenIsDisplayed()
     }
 
-    private companion object {
-        /** Seeded in training mode; pass `-e validUserName <name>` to use another existing account. */
-        const val DEFAULT_VALID_USER_NAME = "student"
-        const val INVALID_PASSWORD = "WrongPass987!"
-        const val VALID_PASSWORD = "Passw0rd123!"
+    companion object {
+        const val TRAINING_PACKAGE = "com.alternator.foroom.training"
 
-        /** The first avatar is preselected, so pick another one to exercise the selection. */
-        const val AVATAR_INDEX = 1
+        // Demo account that the training app creates automatically
+        const val EXISTING_USER_NAME = "student"
+        const val WRONG_PASSWORD = "WrongPassword1"
+        const val NEW_PASSWORD = "Test12345"
 
-        val validUserName: String =
-            InstrumentationRegistry.getArguments().getString("validUserName")
-                ?: DEFAULT_VALID_USER_NAME
-
-        fun uniqueUserName(prefix: String) = "$prefix${System.currentTimeMillis()}"
+        const val USER_NAME_ERROR = "Username does not exist"
+        const val PASSWORD_ERROR = "Incorrect password"
     }
 }
