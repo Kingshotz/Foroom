@@ -1,5 +1,9 @@
 package com.example.foroom.steps
 
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
+import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -17,15 +21,15 @@ object LoginSteps {
     }
 
     fun enterUserName(userName: String) = apply {
-        LoginPage.enterUserName(userName)
+        onView(LoginPage.userNameEditText).perform(replaceText(userName), closeSoftKeyboard())
     }
 
     fun enterPassword(password: String) = apply {
-        LoginPage.enterPassword(password)
+        onView(LoginPage.passwordEditText).perform(replaceText(password), closeSoftKeyboard())
     }
 
     fun clickLogIn() = apply {
-        LoginPage.clickLogIn()
+        onView(LoginPage.logInButton).perform(click())
     }
 
     fun checkUserNameError(errorText: String) = apply {
@@ -38,7 +42,7 @@ object LoginSteps {
 
     /** Opens the registration screen and continues the chain with [RegistrationSteps]. */
     fun clickSignUp(): RegistrationSteps {
-        LoginPage.clickSignUp()
+        onView(LoginPage.signUpButton).perform(click())
         return RegistrationSteps
     }
 }

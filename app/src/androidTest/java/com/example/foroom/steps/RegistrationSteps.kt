@@ -1,5 +1,9 @@
 package com.example.foroom.steps
 
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
+import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import com.example.foroom.Helper.waitFor
@@ -17,24 +21,24 @@ object RegistrationSteps {
     }
 
     fun enterUserName(userName: String) = apply {
-        RegistrationPage.enterUserName(userName)
+        onView(RegistrationPage.userNameEditText).perform(replaceText(userName), closeSoftKeyboard())
     }
 
     fun enterPassword(password: String) = apply {
-        RegistrationPage.enterPassword(password)
+        onView(RegistrationPage.passwordEditText).perform(replaceText(password), closeSoftKeyboard())
     }
 
     fun enterRepeatPassword(password: String) = apply {
-        RegistrationPage.enterRepeatPassword(password)
+        onView(RegistrationPage.repeatPasswordEditText).perform(replaceText(password), closeSoftKeyboard())
     }
 
     fun selectAvatar(index: Int) = apply {
         waitFor(RegistrationPage.avatarList, matches(RegistrationPage.avatarsLoaded))
-        RegistrationPage.clickAvatar(index)
+        onView(RegistrationPage.avatar(index)).perform(click())
     }
 
     fun clickSignUp() = apply {
-        RegistrationPage.clickSignUp()
+        onView(RegistrationPage.signUpButton).perform(click())
     }
 
     fun checkHomeScreenIsDisplayed() = apply {

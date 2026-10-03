@@ -1,10 +1,6 @@
 package com.example.foroom.pages
 
 import android.view.View
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
-import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
@@ -34,6 +30,12 @@ object RegistrationPage {
     val homeContainer = withId(R.id.homeContainer)
     val navBar = withId(R.id.navBar)
 
+    /** Avatar at [index] in the avatar list. */
+    fun avatar(index: Int): Matcher<View> = withIndex(
+        allOf(isAssignableFrom(ImageChooserItemView::class.java), isDescendantOfA(avatarList)),
+        index
+    )
+
     /** True when the real avatars are shown (not the loading placeholders) and can be selected. */
     val avatarsLoaded: Matcher<View> =
         object : BoundedMatcher<View, ImageChooserListView>(ImageChooserListView::class.java) {
@@ -45,25 +47,4 @@ object RegistrationPage {
                 list.isChoosingEnabled && list.images.isNotEmpty() &&
                     list.images.none { it.id == Image.BLANK_IMAGE_ID }
         }
-
-    fun enterUserName(userName: String) {
-        onView(userNameEditText).perform(replaceText(userName), closeSoftKeyboard())
-    }
-
-    fun enterPassword(password: String) {
-        onView(passwordEditText).perform(replaceText(password), closeSoftKeyboard())
-    }
-
-    fun enterRepeatPassword(password: String) {
-        onView(repeatPasswordEditText).perform(replaceText(password), closeSoftKeyboard())
-    }
-
-    fun clickAvatar(index: Int) {
-        val avatars = allOf(isAssignableFrom(ImageChooserItemView::class.java), isDescendantOfA(avatarList))
-        onView(withIndex(avatars, index)).perform(click())
-    }
-
-    fun clickSignUp() {
-        onView(signUpButton).perform(click())
-    }
 }
