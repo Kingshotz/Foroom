@@ -3,6 +3,7 @@ package com.example.foroom.tests
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.example.foroom.data.Constants
 import com.example.foroom.presentation.ui.activity.ForoomActivity
 import com.example.foroom.presentation.ui.util.datastore.user.ForoomUserDataStore
 import com.example.foroom.steps.LoginSteps
@@ -13,10 +14,7 @@ import org.junit.rules.ExternalResource
 import org.junit.runner.RunWith
 import org.koin.core.context.GlobalContext
 
-/**
- * Runs against the training app (com.alternator.foroom.training), the default debug build.
- * Test data and error texts come from its local backend (TrainingInterceptor).
- */
+/** Runs against the training app (com.alternator.foroom.training), the default debug build. */
 @RunWith(AndroidJUnit4::class)
 class LoginAndRegistrationTests {
 
@@ -25,7 +23,9 @@ class LoginAndRegistrationTests {
     val logOutRule = object : ExternalResource() {
         override fun before() {
             val packageName = InstrumentationRegistry.getInstrumentation().targetContext.packageName
-            check(packageName == TRAINING_PACKAGE) { "Run these tests on the training build, not $packageName" }
+            check(packageName == Constants.TRAINING_PACKAGE) {
+                "Run these tests on the training build, not $packageName"
+            }
 
             runBlocking { GlobalContext.get().get<ForoomUserDataStore>().clearUserData() }
         }
@@ -38,21 +38,21 @@ class LoginAndRegistrationTests {
     fun validUserNameAndInvalidPassword() {
         LoginSteps
             .checkLoginScreenIsDisplayed()
-            .enterUserName(EXISTING_USER_NAME)
-            .enterPassword(WRONG_PASSWORD)
+            .enterUserName(Constants.EXISTING_USER_NAME)
+            .enterPassword(Constants.WRONG_PASSWORD)
             .clickLogIn()
-            .checkPasswordError(PASSWORD_ERROR)
+            .checkPasswordError(Constants.PASSWORD_ERROR)
     }
 
     @Test
     fun invalidUserNameAndInvalidPassword() {
         LoginSteps
             .checkLoginScreenIsDisplayed()
-            .enterUserName("nouser${System.currentTimeMillis()}")
-            .enterPassword(WRONG_PASSWORD)
+            .enterUserName(uniqueUserName(Constants.UNKNOWN_USER_NAME_PREFIX))
+            .enterPassword(Constants.WRONG_PASSWORD)
             .clickLogIn()
-            .checkUserNameError(USER_NAME_ERROR)
-            .checkPasswordError(PASSWORD_ERROR)
+            .checkUserNameError(Constants.USER_NAME_ERROR)
+            .checkPasswordError(Constants.PASSWORD_ERROR)
     }
 
     @Test
@@ -61,23 +61,13 @@ class LoginAndRegistrationTests {
             .checkLoginScreenIsDisplayed()
             .clickSignUp()
             .checkRegistrationScreenIsDisplayed()
-            .enterUserName("user${System.currentTimeMillis()}")
-            .enterPassword(NEW_PASSWORD)
-            .enterRepeatPassword(NEW_PASSWORD)
-            .selectAvatar(1)
+            .enterUserName(uniqueUserName(Constants.NEW_USER_NAME_PREFIX))
+            .enterPassword(Constants.NEW_PASSWORD)
+            .enterRepeatPassword(Constants.NEW_PASSWORD)
+            .selectAvatar(Constants.AVATAR_INDEX)
             .clickSignUp()
             .checkHomeScreenIsDisplayed()
     }
 
-    companion object {
-        const val TRAINING_PACKAGE = "com.alternator.foroom.training"
-
-        // Demo account that the training app creates automatically
-        const val EXISTING_USER_NAME = "student"
-        const val WRONG_PASSWORD = "WrongPassword1"
-        const val NEW_PASSWORD = "Test12345"
-
-        const val USER_NAME_ERROR = "Username does not exist"
-        const val PASSWORD_ERROR = "Incorrect password"
-    }
+    private fun uniqueUserName(prefix: String) = "$prefix${System.currentTimeMillis()}"
 }
