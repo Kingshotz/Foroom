@@ -4,6 +4,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.example.foroom.data.Constants
+import com.example.foroom.data.DataGenerator
 import com.example.foroom.presentation.ui.activity.ForoomActivity
 import com.example.foroom.presentation.ui.util.datastore.user.ForoomUserDataStore
 import com.example.foroom.steps.LoginSteps
@@ -48,7 +49,7 @@ class LoginAndRegistrationTests {
     fun invalidUserNameAndInvalidPassword() {
         LoginSteps
             .checkLoginScreenIsDisplayed()
-            .enterUserName(uniqueUserName(Constants.UNKNOWN_USER_NAME_PREFIX))
+            .enterUserName(DataGenerator.unknownUserName())
             .enterPassword(Constants.WRONG_PASSWORD)
             .clickLogIn()
             .checkUserNameError(Constants.USER_NAME_ERROR)
@@ -61,13 +62,11 @@ class LoginAndRegistrationTests {
             .checkLoginScreenIsDisplayed()
             .clickSignUp()
             .checkRegistrationScreenIsDisplayed()
-            .enterUserName(uniqueUserName(Constants.NEW_USER_NAME_PREFIX))
+            .enterUserName(DataGenerator.newUserName())
             .enterPassword(Constants.NEW_PASSWORD)
             .enterRepeatPassword(Constants.NEW_PASSWORD)
             .selectAvatar(Constants.AVATAR_INDEX)
             .clickSignUp()
             .checkHomeScreenIsDisplayed()
     }
-
-    private fun uniqueUserName(prefix: String) = "$prefix${System.currentTimeMillis()}"
 }
