@@ -40,7 +40,7 @@ fun ViewInteraction.waitUntilVisible(timeoutSec: Long): ViewInteraction {
         try {
             check(matches(isDisplayed()))
             return this
-        } catch (_: Exception) {
+        } catch (_: Throwable) {
             Thread.sleep(50)
         }
     } while (System.currentTimeMillis() < endTime)
