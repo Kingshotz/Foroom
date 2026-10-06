@@ -2,18 +2,20 @@ package com.example.foroom.tests
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import com.example.foroom.data.AppLanguage
 import com.example.foroom.data.Constants
 import com.example.foroom.data.DataGenerator
 import com.example.foroom.domain.model.request.RegistrationRequest
 import com.example.foroom.domain.usecase.RegisterUserUseCase
 import com.example.foroom.presentation.ui.activity.ForoomActivity
-import com.example.foroom.rules.TrainingAppRule
+import com.example.foroom.presentation.ui.util.datastore.user.ForoomUserDataStore
 import com.example.foroom.steps.LoginSteps
 import kotlinx.coroutines.runBlocking
 import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.ExternalResource
 import org.junit.runner.RunWith
 import org.koin.core.context.GlobalContext
 
@@ -21,9 +23,13 @@ import org.koin.core.context.GlobalContext
 @RunWith(AndroidJUnit4::class)
 class ProfileAndChatTests {
 
-    // Runs first: logs out and resets the language before the activity starts
+    // Runs before the activity starts: logs out and resets the language, so every test begins on the login screen
     @get:Rule(order = 0)
-    val trainingAppRule = TrainingAppRule()
+    val logOutRule = object : ExternalResource() {
+        override fun before() {
+            runBlocking { GlobalContext.get().get<ForoomUserDataStore>().clearUserData() }
+        }
+    }
 
     @get:Rule(order = 1)
     val activityRule = ActivityScenarioRule(ForoomActivity::class.java)
@@ -89,6 +95,11 @@ class ProfileAndChatTests {
         @BeforeClass
         @JvmStatic
         fun registerUser() {
+            val packageName = InstrumentationRegistry.getInstrumentation().targetContext.packageName
+            check(packageName == Constants.TRAINING_PACKAGE) {
+                "Run these tests on the training build, not $packageName"
+            }
+
             val registerUser = GlobalContext.get().get<RegisterUserUseCase>()
             runBlocking {
                 registerUser(RegistrationRequest(user.userName, user.password, Constants.Account.AVATAR_ID))
