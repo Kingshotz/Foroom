@@ -10,9 +10,7 @@ import com.example.foroom.models.User
 import com.example.foroom.pages.LoginPage
 import org.hamcrest.Matchers.allOf
 
-/** Steps of the login screen. Every step returns the next steps object, so calls can be chained. */
 object LoginSteps {
-
     fun checkLoginScreenIsDisplayed() = apply {
         onView(LoginPage.userNameInput).waitUntilVisible(WAIT_TIMEOUT_SEC)
         onView(LoginPage.passwordInput).waitUntilVisible(WAIT_TIMEOUT_SEC)
@@ -31,7 +29,6 @@ object LoginSteps {
         onView(LoginPage.logInButton).tap(WAIT_TIMEOUT_SEC)
     }
 
-    /** Fills in the credentials, logs in and continues on the home screen. */
     fun logIn(user: User): HomeSteps {
         enterUserName(user.userName)
         enterPassword(user.password)

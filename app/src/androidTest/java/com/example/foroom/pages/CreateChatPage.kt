@@ -22,7 +22,6 @@ object CreateChatPage {
 
     val chatNameEditText = allOf(withId(DesignR.id.inputEditText), isDescendantOfA(chatNameInput))
 
-    /** The image chooser once its real images are loaded; until then it holds blank placeholders. */
     val loadedImageChooser: Matcher<View> = allOf(
         chatImageChooser,
         object : BoundedMatcher<View, ImageChooserListView>(ImageChooserListView::class.java) {
@@ -35,7 +34,6 @@ object CreateChatPage {
         }
     )
 
-    /** The image at [index] (in display order) of the chooser; its items have no ids. */
     fun chatImage(index: Int): Matcher<View> = allOf(
         isDescendantOfA(chatImageChooser),
         object : BoundedMatcher<View, ImageChooserItemView>(ImageChooserItemView::class.java) {

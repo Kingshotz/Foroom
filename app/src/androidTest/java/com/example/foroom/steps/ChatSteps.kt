@@ -9,9 +9,7 @@ import com.example.foroom.pages.ChatPage
 import com.example.foroom.pages.ChatsPage
 import com.example.foroom.pages.CreateChatPage
 
-/** Steps of chat creation, the opened chat and the chat list. */
 object ChatSteps {
-
     fun checkCreateChatScreenIsDisplayed() = apply {
         onView(CreateChatPage.chatNameInput).waitUntilVisible(WAIT_TIMEOUT_SEC)
         onView(CreateChatPage.createChatButton).waitUntilVisible(WAIT_TIMEOUT_SEC)
@@ -21,7 +19,6 @@ object ChatSteps {
         onView(CreateChatPage.chatNameEditText).waitUntilVisible(WAIT_TIMEOUT_SEC).input(name)
     }
 
-    /** Chat images are loaded in the background, so the selection waits until they are ready. */
     fun selectChatImage(index: Int) = apply {
         onView(CreateChatPage.loadedImageChooser).waitUntilVisible(WAIT_TIMEOUT_SEC)
         onView(CreateChatPage.chatImage(index)).tap(WAIT_TIMEOUT_SEC)

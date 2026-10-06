@@ -8,7 +8,6 @@ import org.hamcrest.Matcher
 import org.hamcrest.Matchers.allOf
 import com.example.design_system.R as DesignR
 
-/** Opened chat screen. */
 object ChatPage {
     val closeButton = withId(R.id.closeButton)
 

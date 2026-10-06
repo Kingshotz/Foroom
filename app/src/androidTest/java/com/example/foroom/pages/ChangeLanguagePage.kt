@@ -6,7 +6,6 @@ import com.alternator.foroom.R
 import com.example.foroom.data.AppLanguage
 import org.hamcrest.Matcher
 
-/** Change language bottom sheet. */
 object ChangeLanguagePage {
     val georgianButton = withId(R.id.languageButtonGeo)
     val englishButton = withId(R.id.languageButtonEng)

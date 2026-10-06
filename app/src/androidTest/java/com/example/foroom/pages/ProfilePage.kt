@@ -14,7 +14,6 @@ object ProfilePage {
     val changeLanguageItem = withId(R.id.changeLanguageItem)
     val signOutItem = withId(R.id.signOutItem)
 
-    // The text of a list item is a child of the item
     private val changeLanguageLabel = allOf(withId(DesignR.id.listItemTextView), isDescendantOfA(changeLanguageItem))
     private val signOutLabel = allOf(withId(DesignR.id.listItemTextView), isDescendantOfA(signOutItem))
 

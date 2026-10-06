@@ -1,16 +1,10 @@
 package com.example.foroom.data
 
-/**
- * Every fixed value used by the tests: timeouts, account data and expected texts.
- * Texts are copied from the app's string resources (values and values-ka).
- */
 object Constants {
     const val TRAINING_PACKAGE = "com.alternator.foroom.training"
 
-    // Maximum time to wait for the app's asynchronous updates (login, language change, chat loading)
     const val WAIT_TIMEOUT_SEC = 10L
 
-    /** Data of the test account that is registered in the Foroom Training app before the tests. */
     object Account {
         const val USER_NAME_PREFIX = "shota"
         const val PASSWORD = "pass123"
@@ -21,7 +15,6 @@ object Constants {
     object Chat {
         const val OWNER_FULL_NAME = "Shota Shalamberidze"
 
-        // Index of the chat image to select; the first one is selected by default
         const val IMAGE_INDEX = 1
     }
 
@@ -30,13 +23,11 @@ object Constants {
         const val INCORRECT_PASSWORD = "Incorrect password"
     }
 
-    /** Profile labels shown when the app language is Georgian. */
     object Georgian {
         const val CHANGE_LANGUAGE = "ენის შეცვლა"
         const val SIGN_OUT = "გამოსვლა"
     }
 
-    /** Profile labels shown when the app language is English. */
     object English {
         const val CHANGE_LANGUAGE = "Change Language"
         const val SIGN_OUT = "Sign Out"

@@ -19,11 +19,8 @@ import org.junit.rules.ExternalResource
 import org.junit.runner.RunWith
 import org.koin.core.context.GlobalContext
 
-/** Runs against the training app (com.alternator.foroom.training), the default debug build. */
 @RunWith(AndroidJUnit4::class)
 class ProfileAndChatTests {
-
-    // Runs before the activity starts: logs out and resets the language, so every test begins on the login screen
     @get:Rule(order = 0)
     val logOutRule = object : ExternalResource() {
         override fun before() {
@@ -46,7 +43,6 @@ class ProfileAndChatTests {
             .enterRepeatPassword(Constants.Account.NEW_PASSWORD)
             .confirmPasswordChange()
 
-        // The account has the new password now; the other tests log in with the user's current password
         user.password = Constants.Account.NEW_PASSWORD
 
         LoginSteps
@@ -89,7 +85,6 @@ class ProfileAndChatTests {
     }
 
     companion object {
-        // One new user for the whole class; the app keeps its accounts on the device
         private val user = DataGenerator.user()
 
         @BeforeClass
