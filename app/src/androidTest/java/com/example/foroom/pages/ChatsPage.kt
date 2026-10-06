@@ -5,7 +5,6 @@ import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import com.alternator.foroom.R
-import com.example.foroom.Helper.childOf
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.allOf
 import com.example.design_system.R as DesignR
@@ -16,7 +15,7 @@ object ChatsPage {
     val chatsRecyclerView = withId(R.id.chatsRecyclerView)
 
     // The search bar wraps an Input, so its edit text is found by the Input's child id
-    val searchEditText = childOf(searchChatInput, DesignR.id.inputEditText)
+    val searchEditText = allOf(withId(DesignR.id.inputEditText), isDescendantOfA(searchChatInput))
 
     /** The title of the chat card with this name, inside the chat list. */
     fun chatCard(name: String): Matcher<View> = allOf(

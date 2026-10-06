@@ -1,8 +1,10 @@
 package com.example.foroom.steps
 
-import com.example.foroom.Helper.click
-import com.example.foroom.Helper.enterText
-import com.example.foroom.Helper.waitUntilDisplayed
+import androidx.test.espresso.Espresso.onView
+import com.example.foroom.Helper.input
+import com.example.foroom.Helper.tap
+import com.example.foroom.Helper.waitUntilVisible
+import com.example.foroom.data.Constants.WAIT_TIMEOUT_SEC
 import com.example.foroom.pages.ChatPage
 import com.example.foroom.pages.ChatsPage
 import com.example.foroom.pages.CreateChatPage
@@ -11,38 +13,38 @@ import com.example.foroom.pages.CreateChatPage
 object ChatSteps {
 
     fun checkCreateChatScreenIsDisplayed() = apply {
-        CreateChatPage.chatNameInput.waitUntilDisplayed()
-        CreateChatPage.createChatButton.waitUntilDisplayed()
+        onView(CreateChatPage.chatNameInput).waitUntilVisible(WAIT_TIMEOUT_SEC)
+        onView(CreateChatPage.createChatButton).waitUntilVisible(WAIT_TIMEOUT_SEC)
     }
 
     fun enterChatName(name: String) = apply {
-        CreateChatPage.chatNameEditText.enterText(name)
+        onView(CreateChatPage.chatNameEditText).waitUntilVisible(WAIT_TIMEOUT_SEC).input(name)
     }
 
     /** Chat images are loaded in the background, so the selection waits until they are ready. */
     fun selectChatImage(index: Int) = apply {
-        CreateChatPage.loadedImageChooser.waitUntilDisplayed()
-        CreateChatPage.chatImage(index).click()
+        onView(CreateChatPage.loadedImageChooser).waitUntilVisible(WAIT_TIMEOUT_SEC)
+        onView(CreateChatPage.chatImage(index)).tap(WAIT_TIMEOUT_SEC)
     }
 
     fun clickCreateChat() = apply {
-        CreateChatPage.createChatButton.click()
+        onView(CreateChatPage.createChatButton).tap(WAIT_TIMEOUT_SEC)
     }
 
     fun checkChatScreenIsDisplayed(name: String) = apply {
-        ChatPage.chatName(name).waitUntilDisplayed()
-        ChatPage.closeButton.waitUntilDisplayed()
+        onView(ChatPage.chatName(name)).waitUntilVisible(WAIT_TIMEOUT_SEC)
+        onView(ChatPage.closeButton).waitUntilVisible(WAIT_TIMEOUT_SEC)
     }
 
     fun closeChat() = apply {
-        ChatPage.closeButton.click()
+        onView(ChatPage.closeButton).tap(WAIT_TIMEOUT_SEC)
     }
 
     fun searchChat(name: String) = apply {
-        ChatsPage.searchEditText.enterText(name)
+        onView(ChatsPage.searchEditText).waitUntilVisible(WAIT_TIMEOUT_SEC).input(name)
     }
 
     fun checkChatIsListed(name: String) = apply {
-        ChatsPage.chatCard(name).waitUntilDisplayed()
+        onView(ChatsPage.chatCard(name)).waitUntilVisible(WAIT_TIMEOUT_SEC)
     }
 }

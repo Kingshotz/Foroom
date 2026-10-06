@@ -10,9 +10,9 @@ object Constants {
     // Maximum time to wait for the app's asynchronous updates (login, language change, chat loading)
     const val WAIT_TIMEOUT_SEC = 10L
 
-    /** Dedicated test account of the Foroom Training app. It is reset before every test. */
+    /** Data of the test account that is registered in the Foroom Training app before the tests. */
     object Account {
-        const val USER_NAME = "shota"
+        const val USER_NAME_PREFIX = "shota"
         const val PASSWORD = "pass123"
         const val NEW_PASSWORD = "newpass123"
         const val AVATAR_ID = 1

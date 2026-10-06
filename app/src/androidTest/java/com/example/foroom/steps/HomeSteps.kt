@@ -1,29 +1,31 @@
 package com.example.foroom.steps
 
-import com.example.foroom.Helper.click
-import com.example.foroom.Helper.waitUntilDisplayed
+import androidx.test.espresso.Espresso.onView
+import com.example.foroom.Helper.tap
+import com.example.foroom.Helper.waitUntilVisible
+import com.example.foroom.data.Constants.WAIT_TIMEOUT_SEC
 import com.example.foroom.pages.HomePage
 
 /** Steps of the home screen and its bottom navigation. */
 object HomeSteps {
 
     fun checkHomeScreenIsDisplayed() = apply {
-        HomePage.navBar.waitUntilDisplayed()
-        HomePage.homeContainer.waitUntilDisplayed()
+        onView(HomePage.navBar).waitUntilVisible(WAIT_TIMEOUT_SEC)
+        onView(HomePage.homeContainer).waitUntilVisible(WAIT_TIMEOUT_SEC)
     }
 
     fun openProfile(): ProfileSteps {
-        HomePage.profileNavigation.click()
+        onView(HomePage.profileNavigation).tap(WAIT_TIMEOUT_SEC)
         return ProfileSteps
     }
 
     fun openCreateChat(): ChatSteps {
-        HomePage.createChatNavigation.click()
+        onView(HomePage.createChatNavigation).tap(WAIT_TIMEOUT_SEC)
         return ChatSteps
     }
 
     fun openChats(): ChatSteps {
-        HomePage.chatsNavigation.click()
+        onView(HomePage.chatsNavigation).tap(WAIT_TIMEOUT_SEC)
         return ChatSteps
     }
 }

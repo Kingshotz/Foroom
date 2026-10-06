@@ -1,9 +1,11 @@
 package com.example.foroom.steps
 
-import com.example.foroom.Helper.click
-import com.example.foroom.Helper.enterText
-import com.example.foroom.Helper.waitUntilDisplayed
+import androidx.test.espresso.Espresso.onView
+import com.example.foroom.Helper.input
+import com.example.foroom.Helper.tap
+import com.example.foroom.Helper.waitUntilVisible
 import com.example.foroom.data.AppLanguage
+import com.example.foroom.data.Constants.WAIT_TIMEOUT_SEC
 import com.example.foroom.pages.ChangeLanguagePage
 import com.example.foroom.pages.ChangePasswordPage
 import com.example.foroom.pages.ProfilePage
@@ -12,39 +14,39 @@ import com.example.foroom.pages.ProfilePage
 object ProfileSteps {
 
     fun checkProfileScreenIsDisplayed() = apply {
-        ProfilePage.changePasswordItem.waitUntilDisplayed()
-        ProfilePage.changeLanguageItem.waitUntilDisplayed()
-        ProfilePage.signOutItem.waitUntilDisplayed()
+        onView(ProfilePage.changePasswordItem).waitUntilVisible(WAIT_TIMEOUT_SEC)
+        onView(ProfilePage.changeLanguageItem).waitUntilVisible(WAIT_TIMEOUT_SEC)
+        onView(ProfilePage.signOutItem).waitUntilVisible(WAIT_TIMEOUT_SEC)
     }
 
     // Change password
 
     fun openChangePassword() = apply {
-        ProfilePage.changePasswordItem.click()
+        onView(ProfilePage.changePasswordItem).tap(WAIT_TIMEOUT_SEC)
     }
 
     fun enterNewPassword(password: String) = apply {
-        ChangePasswordPage.passwordEditText.enterText(password)
+        onView(ChangePasswordPage.passwordEditText).waitUntilVisible(WAIT_TIMEOUT_SEC).input(password)
     }
 
     fun enterRepeatPassword(password: String) = apply {
-        ChangePasswordPage.repeatPasswordEditText.enterText(password)
+        onView(ChangePasswordPage.repeatPasswordEditText).waitUntilVisible(WAIT_TIMEOUT_SEC).input(password)
     }
 
     /** The app signs the user out after the password is changed and returns to the login screen. */
     fun confirmPasswordChange(): LoginSteps {
-        ChangePasswordPage.confirmButton.click()
+        onView(ChangePasswordPage.confirmButton).tap(WAIT_TIMEOUT_SEC)
         return LoginSteps
     }
 
     // Change language
 
     fun openChangeLanguage() = apply {
-        ProfilePage.changeLanguageItem.click()
+        onView(ProfilePage.changeLanguageItem).tap(WAIT_TIMEOUT_SEC)
     }
 
     fun selectLanguage(language: AppLanguage) = apply {
-        ChangeLanguagePage.languageButton(language).click()
+        onView(ChangeLanguagePage.languageButton(language)).tap(WAIT_TIMEOUT_SEC)
     }
 
     /** Opens the language selector and chooses [language]. */
@@ -55,7 +57,7 @@ object ProfileSteps {
 
     /** The app restarts its screen after a language change, so the labels are awaited, not just read. */
     fun checkProfileLanguage(language: AppLanguage) = apply {
-        ProfilePage.changeLanguageLabel(language.changeLanguageLabel).waitUntilDisplayed()
-        ProfilePage.signOutLabel(language.signOutLabel).waitUntilDisplayed()
+        onView(ProfilePage.changeLanguageLabel(language.changeLanguageLabel)).waitUntilVisible(WAIT_TIMEOUT_SEC)
+        onView(ProfilePage.signOutLabel(language.signOutLabel)).waitUntilVisible(WAIT_TIMEOUT_SEC)
     }
 }
